@@ -23,7 +23,7 @@ services:
             - CHOKIDAR_USEPOLLING=true
         build:
             context: .
-            dockerfile: Dockerfile.dev
+            dockerfile: Dockerfile
         image: test-api
         depends_on: 
             - zlifecycle-db
