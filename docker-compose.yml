@@ -1,0 +1,46 @@
+version: '3'
+services:
+    zlifecycle-db:
+        image: mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root_pass
+            MYSQL_DATABASE: test_db
+            MYSQL_USER: test_user
+            MYSQL_PASSWORD: test_user
+        ports:
+            - "3307:3306"
+        networks:
+            - app-network
+        volumes: 
+            - /var/lib/mysql
+            - ./opt/data:/var/lib/mysql
+            - db-config:/etc/mysql
+            - ./db/backup/files/:/data_backup/data
+            - ./healthcheck:/etc/mysql/healthcheck
+    test-api:
+        environment: 
+            - CHOKIDAR_USEPOLLING=true
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        image: test-api
+        depends_on: 
+            - zlifecycle-db
+        ports:
+            - "4000:4000"
+        networks:
+            - app-network
+        volumes:
+            - /app/node_modules
+            - .:/app
+        stdin_open: true
+        tty: true
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes: 
+    db-config:
+    db-data:
